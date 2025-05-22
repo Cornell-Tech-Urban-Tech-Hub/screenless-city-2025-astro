@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Airtable from 'airtable';
+
+const base = new Airtable({
+	apiKey: import.meta.env.AIRTABLE_API_KEY
+}).base(import.meta.env.AIRTABLE_BASE_ID);
+
+// Fetch data from Airtable
+const speakers = await base('Speakers').select().all();
+const sessions = await base('Sessions').select().all();
+const sponsors = await base('Sponsors').select().all();
+const venueRecords = await base('Venue').select().all();
+const venue = venueRecords[0]; // Get the first venue record
+---
+
+<Layout title="The Screenless City: New Technologies for Presence and Connection">
+	<header class="bg-gradient-to-r from-primary to-secondary text-white py-20">
+		<div class="container mx-auto px-4">
+			<h1 class="text-5xl font-bold mb-4">The Screenless City</h1>
+			<p class="text-2xl">New Technologies for Presence and Connection</p>
+		</div>
+	</header>
+
+	<main class="container mx-auto px-4 py-12">
+		<!-- Speakers Section -->
+		<section id="speakers" class="mb-20">
+			<h2 class="text-3xl font-bold mb-8">Speakers</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				{speakers.map((speaker) => (
+					<div class="bg-white rounded-lg shadow-md p-6">
+						<img src={speaker.fields.Photo?.[0]?.url} alt={speaker.fields.Name} class="w-32 h-32 rounded-full mx-auto mb-4" />
+						<h3 class="text-xl font-semibold text-center">{speaker.fields.Name}</h3>
+						<p class="text-gray-600 text-center">{speaker.fields.Title}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<!-- Sessions Section -->
+		<section id="sessions" class="mb-20">
+			<h2 class="text-3xl font-bold mb-8">Sessions</h2>
+			<div class="space-y-6">
+				{sessions.map((session) => (
+					<div class="bg-white rounded-lg shadow-md p-6">
+						<h3 class="text-xl font-semibold mb-2">{session.fields.Title}</h3>
+						<p class="text-gray-600 mb-4">{session.fields.Description}</p>
+						<div class="flex items-center text-sm text-gray-500">
+							<span>{session.fields.Time}</span>
+							<span class="mx-2">•</span>
+							<span>{session.fields.Location}</span>
+						</div>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<!-- Sponsors Section -->
+		<section id="sponsors" class="mb-20">
+			<h2 class="text-3xl font-bold mb-8">Sponsors</h2>
+			<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+				{sponsors.map((sponsor) => (
+					<div class="bg-white rounded-lg shadow-md p-6 flex items-center justify-center">
+						<img src={sponsor.fields.Logo?.[0]?.url} alt={sponsor.fields.Name} class="max-w-full h-auto" />
+					</div>
+				))}
+			</div>
+		</section>
+
+		<!-- Venue Section -->
+		<section id="venue" class="mb-20">
+			<h2 class="text-3xl font-bold mb-8">Venue</h2>
+			{venue && (
+				<div class="bg-white rounded-lg shadow-md p-6">
+					<h3 class="text-xl font-semibold mb-4">{venue.fields.Name}</h3>
+					<p class="text-gray-600 mb-4">{venue.fields.Address}</p>
+					<div class="aspect-w-16 aspect-h-9">
+						<iframe
+							src={venue.fields.MapEmbed}
+							width="100%"
+							height="450"
+							style="border:0;"
+							allowfullscreen=""
+							loading="lazy"
+							referrerpolicy="no-referrer-when-downgrade"
+						></iframe>
+					</div>
+				</div>
+			)}
+		</section>
+	</main>
+
+	<footer class="bg-gray-900 text-white py-8">
+		<div class="container mx-auto px-4 text-center">
+			<p>&copy; {new Date().getFullYear()} The Screenless City Conference. All rights reserved.</p>
+		</div>
+	</footer>
+</Layout>
