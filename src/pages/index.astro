@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Airtable from 'airtable';
+import SubscribeForm from '../components/SubscribeForm';
 
 const base = new Airtable({
 	apiKey: import.meta.env.AIRTABLE_API_KEY
@@ -87,6 +88,17 @@ const venue = venueRecords[0]; // Get the first venue record
 					</div>
 				</div>
 			)}
+		</section>
+
+		<!-- Subscribe Section -->
+		<section id="subscribe" class="mb-20">
+			<div class="bg-white rounded-lg shadow-md p-8">
+				<h2 class="text-3xl font-bold mb-4 text-center">Stay Updated</h2>
+				<p class="text-gray-600 text-center mb-8">
+					Subscribe to receive updates about The Screenless City conference.
+				</p>
+				<SubscribeForm client:load />
+			</div>
 		</section>
 	</main>
 
